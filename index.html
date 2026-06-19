@@ -1,0 +1,304 @@
+```html
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Лічильник їблування</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#000;
+    overflow:hidden;
+    color:#fff;
+    font-family:'Bebas Neue',sans-serif;
+    height:100vh;
+}
+
+#stars{
+    position:fixed;
+    inset:0;
+    z-index:0;
+}
+
+.container{
+    position:relative;
+    z-index:2;
+    width:100%;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:20px;
+}
+
+.glitch{
+    position:relative;
+    animation:glitch-skew 4s infinite linear alternate-reverse;
+}
+
+.glitch::before,
+.glitch::after{
+    content:attr(data-text);
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+    overflow:hidden;
+}
+
+.glitch::before{
+    color:#ff0055;
+    z-index:-1;
+    transform:translate(-2px,0);
+    animation:glitch1 2s infinite linear alternate-reverse;
+}
+
+.glitch::after{
+    color:#00ffff;
+    z-index:-2;
+    transform:translate(2px,0);
+    animation:glitch2 3s infinite linear alternate-reverse;
+}
+
+@keyframes glitch1{
+    0%{clip-path:inset(10% 0 80% 0);}
+    20%{clip-path:inset(50% 0 10% 0);}
+    40%{clip-path:inset(30% 0 40% 0);}
+    60%{clip-path:inset(80% 0 5% 0);}
+    80%{clip-path:inset(15% 0 60% 0);}
+    100%{clip-path:inset(40% 0 20% 0);}
+}
+
+@keyframes glitch2{
+    0%{clip-path:inset(70% 0 10% 0);}
+    20%{clip-path:inset(20% 0 60% 0);}
+    40%{clip-path:inset(10% 0 70% 0);}
+    60%{clip-path:inset(50% 0 15% 0);}
+    80%{clip-path:inset(30% 0 30% 0);}
+    100%{clip-path:inset(60% 0 10% 0);}
+}
+
+@keyframes glitch-skew{
+    0%{transform:skew(0deg);}
+    25%{transform:skew(1deg);}
+    50%{transform:skew(-1deg);}
+    75%{transform:skew(0.5deg);}
+    100%{transform:skew(0deg);}
+}
+
+.title{
+    font-size:clamp(32px,6vw,72px);
+    letter-spacing:3px;
+    margin-bottom:10px;
+}
+
+.timer{
+    font-size:clamp(28px,8vw,90px);
+    margin-bottom:60px;
+    text-shadow:0 0 20px rgba(255,255,255,.4);
+}
+
+.subtitle{
+    font-size:clamp(20px,3vw,36px);
+    max-width:1000px;
+    margin-bottom:15px;
+    line-height:1.2;
+}
+
+.countdown{
+    font-size:clamp(24px,5vw,60px);
+}
+
+.footer{
+    position:absolute;
+    bottom:20px;
+    opacity:.35;
+    font-size:14px;
+    letter-spacing:2px;
+}
+
+@media (max-width:768px){
+
+    .title{
+        font-size:34px;
+    }
+
+    .timer{
+        font-size:42px;
+        margin-bottom:40px;
+    }
+
+    .subtitle{
+        font-size:22px;
+    }
+
+    .countdown{
+        font-size:28px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="stars"></canvas>
+
+<div class="container">
+
+    <div class="title glitch"
+         data-text="ЛІЧИЛЬНИК ЇБЛУВАННЯ">
+         ЛІЧИЛЬНИК ЇБЛУВАННЯ
+    </div>
+
+    <div class="timer glitch"
+         data-text="00:00:00.000"
+         id="idleTimer">
+         00:00:00.000
+    </div>
+
+    <div class="subtitle glitch"
+         data-text="ВИ НІХУЯ НЕ РОБИТЕ">
+         ВИ НІХУЯ НЕ РОБИТЕ
+    </div>
+
+    <br>
+
+    <div class="subtitle glitch"
+         data-text="НІХУЯ Й НЕ ЗРОБИТЕ: ЛІЧИЛЬНИК ДО 2030 РОКУ">
+         НІХУЯ Й НЕ ЗРОБИТЕ: ЛІЧИЛЬНИК ДО 2030 РОКУ
+    </div>
+
+    <div class="countdown" id="countdown">
+        0 ДНІВ 00:00:00
+    </div>
+
+    <div class="footer">
+        GITHUB PAGES EDITION
+    </div>
+
+</div>
+
+<script>
+const idleTimer=document.getElementById("idleTimer");
+const startTime=Date.now();
+
+function updateIdleTimer(){
+
+    const elapsed=Date.now()-startTime;
+
+    const hours=Math.floor(elapsed/3600000);
+    const minutes=Math.floor((elapsed%3600000)/60000);
+    const seconds=Math.floor((elapsed%60000)/1000);
+    const milliseconds=elapsed%1000;
+
+    idleTimer.textContent=
+        String(hours).padStart(2,'0')+":"+
+        String(minutes).padStart(2,'0')+":"+
+        String(seconds).padStart(2,'0')+"."+
+        String(milliseconds).padStart(3,'0');
+}
+
+setInterval(updateIdleTimer,10);
+
+const countdown=document.getElementById("countdown");
+const targetDate=new Date("2030-01-01T00:00:00");
+
+function updateCountdown(){
+
+    const now=new Date();
+    const diff=targetDate-now;
+
+    if(diff<=0){
+        countdown.textContent="ЧАС ВИЙШОВ";
+        return;
+    }
+
+    const days=Math.floor(diff/(1000*60*60*24));
+    const hours=Math.floor((diff/(1000*60*60))%24);
+    const minutes=Math.floor((diff/(1000*60))%60);
+    const seconds=Math.floor((diff/1000)%60);
+
+    countdown.textContent=
+        days+" ДНІВ "+
+        String(hours).padStart(2,'0')+":"+
+        String(minutes).padStart(2,'0')+":"+
+        String(seconds).padStart(2,'0');
+}
+
+updateCountdown();
+setInterval(updateCountdown,1000);
+
+const canvas=document.getElementById("stars");
+const ctx=canvas.getContext("2d");
+
+let w,h;
+
+function resize(){
+    w=canvas.width=window.innerWidth;
+    h=canvas.height=window.innerHeight;
+}
+resize();
+
+window.addEventListener("resize",resize);
+
+const stars=[];
+
+for(let i=0;i<700;i++){
+    stars.push({
+        x:(Math.random()-0.5)*w,
+        y:(Math.random()-0.5)*h,
+        z:Math.random()*w
+    });
+}
+
+function animate(){
+
+    ctx.fillStyle="black";
+    ctx.fillRect(0,0,w,h);
+
+    for(let star of stars){
+
+        star.z-=2;
+
+        if(star.z<=1){
+            star.x=(Math.random()-0.5)*w;
+            star.y=(Math.random()-0.5)*h;
+            star.z=w;
+        }
+
+        const k=128/star.z;
+
+        const px=star.x*k+w/2;
+        const py=star.y*k+h/2;
+
+        if(px>=0&&px<w&&py>=0&&py<h){
+
+            const size=(1-star.z/w)*4;
+
+            ctx.beginPath();
+            ctx.arc(px,py,size,0,Math.PI*2);
+            ctx.fillStyle="white";
+            ctx.fill();
+        }
+    }
+
+    requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+
+</body>
+</html>
+```
