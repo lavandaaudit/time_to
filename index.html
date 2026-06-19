@@ -26,7 +26,7 @@ body{
 body{
     background:#000;
     overflow:hidden;
-    color:white;
+    color:#fff;
     font-family:'Bebas Neue',sans-serif;
 }
 
@@ -53,102 +53,6 @@ body{
     padding:20px;
 }
 
-.glitch{
-    position:relative;
-
-    text-shadow:
-    0 0 8px rgba(255,255,255,.15),
-    -1px 0 rgba(255,0,80,.20),
-    1px 0 rgba(0,255,255,.20);
-
-    animation:glitch-skew 20s infinite;
-}
-
-.glitch::before,
-.glitch::after{
-    content:attr(data-text);
-
-    position:absolute;
-    left:0;
-    top:0;
-
-    width:100%;
-    overflow:hidden;
-}
-
-.glitch::before{
-    color:#ff3366;
-
-    transform:translateX(-1px);
-
-    opacity:.25;
-
-    animation:glitch1 18s infinite;
-}
-
-.glitch::after{
-    color:#00ffff;
-
-    transform:translateX(1px);
-
-    opacity:.25;
-
-    animation:glitch2 22s infinite;
-}
-
-@keyframes glitch1{
-
-    0%,90%,100%{
-        clip-path:inset(0 0 0 0);
-    }
-
-    92%{
-        clip-path:inset(15% 0 55% 0);
-    }
-
-    94%{
-        clip-path:inset(70% 0 10% 0);
-    }
-
-    96%{
-        clip-path:inset(35% 0 35% 0);
-    }
-}
-
-@keyframes glitch2{
-
-    0%,88%,100%{
-        clip-path:inset(0 0 0 0);
-    }
-
-    90%{
-        clip-path:inset(60% 0 10% 0);
-    }
-
-    94%{
-        clip-path:inset(10% 0 70% 0);
-    }
-
-    98%{
-        clip-path:inset(40% 0 20% 0);
-    }
-}
-
-@keyframes glitch-skew{
-
-    0%,100%{
-        transform:skew(0deg);
-    }
-
-    95%{
-        transform:skew(.5deg);
-    }
-
-    97%{
-        transform:skew(-.5deg);
-    }
-}
-
 .title{
     font-size:clamp(32px,5vw,70px);
     letter-spacing:4px;
@@ -164,6 +68,7 @@ body{
 .timer{
     font-size:clamp(42px,8vw,95px);
     margin-bottom:60px;
+    min-height:1em;
 }
 
 .countdown{
@@ -171,12 +76,9 @@ body{
 }
 
 .footer{
-
     position:absolute;
     bottom:20px;
-
     opacity:.25;
-
     font-size:14px;
     letter-spacing:3px;
 }
@@ -211,29 +113,21 @@ body{
 
 <div class="container">
 
-    <div
-        class="title glitch"
-        data-text="ЛІЧИЛЬНИК ЇБЛУВАННЯ">
+    <div class="title">
         ЛІЧИЛЬНИК ЇБЛУВАННЯ
     </div>
 
-    <div
-        class="subtitle glitch"
-        data-text="ВИ НІХУЯ НЕ РОБИТЕ">
+    <div class="subtitle">
         ВИ НІХУЯ НЕ РОБИТЕ
     </div>
 
-    <div
-        class="timer glitch"
-        id="idleTimer"
-        data-text="00:00:00.000">
+    <div class="timer" id="idleTimer">
         00:00:00.000
     </div>
 
-    <div
-        class="subtitle glitch"
-        data-text="НІХУЯ Й НЕ ЗРОБИТЕ: ЛІЧИЛЬНИК ДО 2030 РОКУ">
+    <div class="subtitle">
         НІХУЯ Й НЕ ЗРОБИТЕ
+        <br>
         через:
     </div>
 
@@ -249,93 +143,178 @@ body{
 
 <script>
 
-const idleTimer=document.getElementById("idleTimer");
+const idleTimer = document.getElementById("idleTimer");
 
-const startTime=Date.now();
+const startTime = Date.now();
+
+let currentTimerText = "00:00:00.000";
 
 function updateIdleTimer(){
 
-    const elapsed=Date.now()-startTime;
+    const elapsed = Date.now() - startTime;
 
-    const hours=Math.floor(elapsed/3600000);
-    const minutes=Math.floor((elapsed%3600000)/60000);
-    const seconds=Math.floor((elapsed%60000)/1000);
-    const milliseconds=elapsed%1000;
+    const hours =
+        Math.floor(elapsed / 3600000);
 
-    idleTimer.textContent=
-        String(hours).padStart(2,'0')+
-        ":"+
-        String(minutes).padStart(2,'0')+
-        ":"+
-        String(seconds).padStart(2,'0')+
-        "."+
+    const minutes =
+        Math.floor((elapsed % 3600000) / 60000);
+
+    const seconds =
+        Math.floor((elapsed % 60000) / 1000);
+
+    const milliseconds =
+        elapsed % 1000;
+
+    currentTimerText =
+        String(hours).padStart(2,'0') +
+        ":" +
+        String(minutes).padStart(2,'0') +
+        ":" +
+        String(seconds).padStart(2,'0') +
+        "." +
         String(milliseconds).padStart(3,'0');
+
+    if(!glitchRunning){
+        idleTimer.textContent = currentTimerText;
+    }
 }
 
 setInterval(updateIdleTimer,10);
 
-const countdown=document.getElementById("countdown");
+const countdown =
+    document.getElementById("countdown");
 
-const targetDate=new Date("2030-01-01T00:00:00");
+const targetDate =
+    new Date("2030-01-01T00:00:00");
 
 function updateCountdown(){
 
-    const now=new Date();
+    const now = new Date();
 
-    const diff=targetDate-now;
+    const diff = targetDate - now;
 
-    if(diff<=0){
+    if(diff <= 0){
 
-        countdown.textContent="ЧАС ВИЙШОВ";
+        countdown.textContent =
+            "ЧАС ВИЙШОВ";
 
         return;
     }
 
-    const days=Math.floor(diff/(1000*60*60*24));
+    const days =
+        Math.floor(diff / (1000*60*60*24));
 
-    const hours=Math.floor(
-        (diff/(1000*60*60))%24
-    );
+    const hours =
+        Math.floor((diff/(1000*60*60))%24);
 
-    const minutes=Math.floor(
-        (diff/(1000*60))%60
-    );
+    const minutes =
+        Math.floor((diff/(1000*60))%60);
 
-    const seconds=Math.floor(
-        (diff/1000)%60
-    );
+    const seconds =
+        Math.floor((diff/1000)%60);
 
-    countdown.textContent=
-        days+
+    countdown.textContent =
+        days +
         " ДНІВ " +
-        String(hours).padStart(2,'0')+
-        ":"+
-        String(minutes).padStart(2,'0')+
-        ":"+
+        String(hours).padStart(2,'0') +
+        ":" +
+        String(minutes).padStart(2,'0') +
+        ":" +
         String(seconds).padStart(2,'0');
 }
 
 updateCountdown();
-
 setInterval(updateCountdown,1000);
 
-const canvas=document.getElementById("stars");
-const ctx=canvas.getContext("2d");
+let glitchRunning = false;
+
+function randomChar(){
+
+    const chars =
+        "0123456789#$%@&!?X";
+
+    return chars[
+        Math.floor(Math.random()*chars.length)
+    ];
+}
+
+function generateGlitchText(text){
+
+    let result = "";
+
+    for(let i=0;i<text.length;i++){
+
+        if(
+            Math.random() < 0.25 &&
+            text[i] !== ":" &&
+            text[i] !== "."
+        ){
+            result += randomChar();
+        }
+        else{
+            result += text[i];
+        }
+    }
+
+    return result;
+}
+
+function runGlitch(){
+
+    glitchRunning = true;
+
+    let count = 0;
+
+    const effect = setInterval(()=>{
+
+        idleTimer.textContent =
+            generateGlitchText(currentTimerText);
+
+        count++;
+
+        if(count > 6){
+
+            clearInterval(effect);
+
+            idleTimer.textContent =
+                currentTimerText;
+
+            glitchRunning = false;
+        }
+
+    },60);
+}
+
+setInterval(runGlitch,15000);
+
+const canvas =
+    document.getElementById("stars");
+
+const ctx =
+    canvas.getContext("2d");
 
 let width;
 let height;
 
 function resize(){
 
-    width=canvas.width=window.innerWidth;
-    height=canvas.height=window.innerHeight;
+    width =
+        canvas.width =
+        window.innerWidth;
+
+    height =
+        canvas.height =
+        window.innerHeight;
 }
 
 resize();
 
-window.addEventListener("resize",resize);
+window.addEventListener(
+    "resize",
+    resize
+);
 
-const stars=[];
+const stars = [];
 
 for(let i=0;i<800;i++){
 
@@ -344,39 +323,52 @@ for(let i=0;i<800;i++){
         x:(Math.random()-0.5)*width,
         y:(Math.random()-0.5)*height,
         z:Math.random()*width
+
     });
 }
 
 function animate(){
 
-    ctx.fillStyle="#000";
-    ctx.fillRect(0,0,width,height);
+    ctx.fillStyle = "#000";
+    ctx.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
 
     for(const star of stars){
 
-        star.z-=0.25;
+        star.z -= 0.25;
 
-        if(star.z<=1){
+        if(star.z <= 1){
 
-            star.x=(Math.random()-0.5)*width;
-            star.y=(Math.random()-0.5)*height;
-            star.z=width;
+            star.x =
+                (Math.random()-0.5)*width;
+
+            star.y =
+                (Math.random()-0.5)*height;
+
+            star.z = width;
         }
 
-        const k=128/star.z;
+        const k = 128 / star.z;
 
-        const px=star.x*k+width/2;
-        const py=star.y*k+height/2;
+        const px =
+            star.x * k + width/2;
+
+        const py =
+            star.y * k + height/2;
 
         if(
-            px>=0 &&
-            px<width &&
-            py>=0 &&
-            py<height
+            px >= 0 &&
+            px < width &&
+            py >= 0 &&
+            py < height
         ){
 
-            const size=
-                (1-star.z/width)*2.5;
+            const size =
+                (1 - star.z/width) * 2.5;
 
             ctx.beginPath();
 
@@ -385,15 +377,19 @@ function animate(){
                 py,
                 Math.max(0.3,size),
                 0,
-                Math.PI*2
+                Math.PI * 2
             );
 
-            ctx.fillStyle="rgba(255,255,255,.9)";
+            ctx.fillStyle =
+                "rgba(255,255,255,.9)";
+
             ctx.fill();
         }
     }
 
-    requestAnimationFrame(animate);
+    requestAnimationFrame(
+        animate
+    );
 }
 
 animate();
